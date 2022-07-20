@@ -22,9 +22,9 @@ const AdSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    password: {
-        type: String,
-        required: true
+    clicks: {
+        type: Number,
+        default: 0,
     },
     is_active: {
         type: Boolean,

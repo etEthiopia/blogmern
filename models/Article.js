@@ -36,7 +36,7 @@ const ArticleSchema = mongoose.Schema({
         unique: true,
         maxLength: 30,
     },
-    visibility: {
+    is_visible: {
         type: Boolean,
         default: true
     },
