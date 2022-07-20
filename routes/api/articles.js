@@ -34,6 +34,62 @@ router.get("/", async (req, res) => {
         }))
 });
 
+// @Route GET api/category/:id
+// @desc Returns All Public, Approved, and Visible Articles Searched On Categories 
+// @access Public
+router.get("/category/:name", async (req, res) => {
+    await Article.find({
+        is_visible: true,
+        is_approved: true,
+        is_draft: false,
+        category: req.params.name
+    })
+        .sort({
+            createdOn: -1
+        })
+        .then(articles => {
+            if (articles.length > 0) {
+                res.json(articles)
+            } else {
+                res.status(204).json(articles)
+            }
+
+        })
+
+        .catch(err => res.json({
+            message: err,
+            success: false
+        }))
+});
+
+// @Route GET api/author/:user_id
+// @desc Returns All Public, Approved, and Visible Articles Searched On Authors 
+// @access Public
+router.get("/author/:user_id", async (req, res) => {
+    await Article.find({
+        is_visible: true,
+        is_approved: true,
+        is_draft: false,
+        author_user_id: req.params.user_id
+    })
+        .sort({
+            createdOn: -1
+        })
+        .then(articles => {
+            if (articles.length > 0) {
+                res.json(articles)
+            } else {
+                res.status(204).json(articles)
+            }
+
+        })
+
+        .catch(err => res.json({
+            message: err,
+            success: false
+        }))
+});
+
 // @Route POST api/articles
 // @desc Create an Article
 // @access Private(Author)
@@ -208,7 +264,6 @@ router.put("/visibility", authenticate, async (req, res) => {
             });
 });
 
-
 // @Route PUT api/articles/approval
 // @desc Change Approval Of An Article
 // @access Private(Admin)
@@ -252,8 +307,6 @@ router.put("/approval", authenticate, async (req, res) => {
 
             });
 });
-
-
 
 // @Route DELETE api/articles/
 // @desc Delete an Article
