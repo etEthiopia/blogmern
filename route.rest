@@ -1,0 +1,61 @@
+GET http://localhost:5000/articles/
+
+###
+
+
+POST http://localhost:5000/articles/
+Content-Type: application/json
+
+{
+    "title": "First Article",
+    "category": "Politics",
+    "content": "This is the first article",
+    "author_user_id": "qwertyuiop",
+    "author_full_name": "Elias Meseret",
+    "slug": "first_article",
+    "is_draft": false,
+}
+
+###
+
+
+PUT http://localhost:5000/articles/
+Content-Type: application/json
+
+{
+    "id": "62d74e08fe9363fb8e479654",
+    "title": "Second Article",
+    "category": "Politics",
+    "content": "This is the first article"
+}
+
+###
+
+DELETE http://localhost:5000/articles/
+Content-Type: application/json
+
+{
+ "id": "62d74ccf23d375d6ffb1b050"
+}
+
+
+###
+
+GET http://localhost:5000/articles/first_article
+
+###
+PUT http://localhost:5000/articles/publish/
+Content-Type: application/json
+
+{
+ "id": "62d74aa5c25a3066e30bbd82"
+}
+
+###
+PUT http://localhost:5000/articles/visibility/
+Content-Type: application/json
+
+{
+ "id": "62d74ccf23d375d6ffb1b050",
+ "is_visible": false
+}
