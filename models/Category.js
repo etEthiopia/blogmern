@@ -7,6 +7,10 @@ const CategorySchema = mongoose.Schema({
         required: true,
         unique: true,
         maxLength: 20,
+    },
+    is_active: {
+        type: Boolean,
+        default: true
     }
 
 }, {

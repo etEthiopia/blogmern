@@ -1,5 +1,8 @@
 const router = require("express").Router();
 
+// Middleware
+const authenticate = require('../../middleware/authenticate')
+
 // Article Model
 const Article = require("../../models/Article");
 
@@ -33,15 +36,19 @@ router.get("/", async (req, res) => {
 // @Route POST api/articles
 // @desc Create an Article
 // @access Private(Author)
-router.post("/", async (req, res) => {
+router.post("/", authenticate, async (req, res) => {
+
+    const { title, category, content, author_full_name, slug, thumbnail, is_draft } = req.body;
+
     const newArticle = new Article({
-        title: req.body.title,
-        category: req.body.category,
-        content: req.body.content,
-        author_user_id: req.body.author_user_id,
-        author_full_name: req.body.author_full_name,
-        slug: req.body.slug,
-        is_draft: req.body.is_draft
+        title: title,
+        category: category,
+        content: content,
+        author_user_id: req.user.user_id,
+        author_full_name: author_full_name,
+        thumbnail: thumbnail,
+        slug: slug,
+        is_draft: is_draft
     });
     await newArticle
         .save()
@@ -61,6 +68,7 @@ router.post("/", async (req, res) => {
                     });
                 }
             });
+
 });
 
 
@@ -96,9 +104,10 @@ router.get("/:slug", async (req, res) => {
 // @Route PUT api/articles/
 // @desc Change Title, Content, Category, And Picture Of An Article
 // @access Private(Author)
-router.put("/", async (req, res) => {
+router.put("/", authenticate, async (req, res) => {
+    const { title, category, content, thumbnail } = req.body;
     await Article
-        .findByIdAndUpdate(req.body.id, { title: req.body.title, content: req.body.content, thumbnail: req.body.thumbnail, category: req.body.category, is_edited: true }, {
+        .findByIdAndUpdate(req.body.id, { title: title, content: content, thumbnail: thumbnail, category: category, is_edited: true }, {
             new: false
         })
         .then(article => {
@@ -127,7 +136,7 @@ router.put("/", async (req, res) => {
 // @Route PUT api/articles/publish
 // @desc Publish An Article
 // @access Private(Author)
-router.put("/publish", async (req, res) => {
+router.put("/publish", authenticate, async (req, res) => {
     await Article
         .findByIdAndUpdate(req.body.id, { is_draft: false }, {
             new: false
@@ -157,7 +166,7 @@ router.put("/publish", async (req, res) => {
 // @Route PUT api/articles/visibility
 // @desc Change Visibility Of An Article
 // @access Private(Author)
-router.put("/visibility", async (req, res) => {
+router.put("/visibility", authenticate, async (req, res) => {
     await Article
         .findByIdAndUpdate(req.body.id, { is_visible: req.body.is_visible }, {
             new: false
@@ -188,7 +197,13 @@ router.put("/visibility", async (req, res) => {
 // @Route PUT api/articles/approval
 // @desc Change Approval Of An Article
 // @access Private(Admin)
-router.put("/approval", async (req, res) => {
+router.put("/approval", authenticate, async (req, res) => {
+    if (req.user.user_id !== process.env.ADMIN_PUBLIC) {
+        return res.status(400).json({
+            success: false,
+            message: 'Unauthorized'
+        })
+    }
     await Article
         .findByIdAndUpdate(req.body.id, { is_approved: req.body.is_approved }, {
             new: false
@@ -220,7 +235,7 @@ router.put("/approval", async (req, res) => {
 // @Route DELETE api/articles/
 // @desc Delete an Article
 // @access Private(Author)
-router.delete("/", async (req, res) => {
+router.delete("/", authenticate, async (req, res) => {
     Article.findByIdAndDelete(req.body.id)
         .then((article) => {
             if (article !== null) {
@@ -234,6 +249,37 @@ router.delete("/", async (req, res) => {
                 })
             }
         }).catch(err => res.status(500).json({
+            message: err,
+            success: false
+        }))
+});
+
+
+// @Route GET api/articles_all
+// @desc Returns All Articles
+// @access Private(Admin)
+router.get("/", authenticate, async (req, res) => {
+    if (req.user.user_id !== process.env.ADMIN_PUBLIC) {
+        return res.status(400).json({
+            success: false,
+            message: 'Unauthorized'
+        })
+    }
+    await Article.find({
+    })
+        .sort({
+            createdOn: -1
+        })
+        .then(articles => {
+            if (articles.length > 0) {
+                res.json(articles)
+            } else {
+                res.status(204).json(articles)
+            }
+
+        })
+
+        .catch(err => res.json({
             message: err,
             success: false
         }))

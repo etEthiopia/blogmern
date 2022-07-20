@@ -5,15 +5,16 @@ GET http://localhost:5000/articles/
 
 POST http://localhost:5000/articles/
 Content-Type: application/json
-
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZDc1Y2I1YzM1YjM3YTg0NzUwZmVlMSIsInVzZXJfaWQiOiJxd2VydHl1aW9wIiwiaWF0IjoxNjU4Mjg1NTE4LCJleHAiOjE2NjM0Njk1MTh9.9lPl0V0kEFSEYjpgLjK3PU0w3RNhTfwkwaHSN5vns80
+    
 {
     "title": "First Article",
     "category": "Politics",
     "content": "This is the first article",
-    "author_user_id": "qwertyuiop",
     "author_full_name": "Elias Meseret",
     "slug": "first_article",
     "is_draft": false,
+    "thumbnail": "https://classlete.com/wp-content/themes/thrive-nouveau/css/images/demo-featured-image.png"
 }
 
 ###
@@ -35,7 +36,7 @@ DELETE http://localhost:5000/articles/
 Content-Type: application/json
 
 {
- "id": "62d74ccf23d375d6ffb1b050"
+ "id": "62d76e49d83c194c2b891c87"
 }
 
 
@@ -48,7 +49,7 @@ PUT http://localhost:5000/articles/publish/
 Content-Type: application/json
 
 {
- "id": "62d74aa5c25a3066e30bbd82"
+ "id": "62d74e08fe9363fb8e479654"
 }
 
 ###
@@ -56,6 +57,67 @@ PUT http://localhost:5000/articles/visibility/
 Content-Type: application/json
 
 {
- "id": "62d74ccf23d375d6ffb1b050",
+ "id": "62d76915bda028b192cc49a0",
  "is_visible": false
 }
+
+###
+PUT http://localhost:5000/articles/approval/
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZDc3NWNjMTAxNmI1OWRiZGU0ZjBjMSIsInVzZXJfaWQiOiJBSUBBRkZBQkxFIiwiaWF0IjoxNjU4Mjg4MDE0LCJleHAiOjE2NTgzNzQ0MTR9.bhsr8A9zY1-LsLkuHQCd0PHjCOQJP6IAo0lcSfOrJHo
+
+{
+ "id": "62d76e6ad83c194c2b891c8a",
+ "is_approved": true
+}
+
+
+
+###
+POST http://localhost:5000/authors/
+Content-Type: application/json
+
+{
+    "full_name": "Elias Meseret",
+    "user_id": "qwertyuiop",
+    "email": "eliasmeseret@gmail.com",
+    "password": "A@123456",
+    "profile_pic": "Elias Meseret",
+    "is_active": true
+    
+}
+
+
+###
+POST http://localhost:5000/auth/
+Content-Type: application/json
+
+{
+    "email": "eliasmeseret@gmail.com",
+    "password": "A@123456"
+}
+
+
+###
+
+POST http://localhost:5000/admins/
+Content-Type: application/json
+
+{
+    "full_name": "Dagmawi Neguss",
+    "email": "daginegussu@gmail.com",
+    "password": "A@123456",
+    "adminkey": "ADMIN@AFFABLE"
+
+}
+###
+
+POST http://localhost:5000/auth/admin
+Content-Type: application/json
+
+{
+    "email": "daginegussu@gmail.com",
+    "password": "A@123456"
+}
+
+//token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZDc3NWNjMTAxNmI1OWRiZGU0ZjBjMSIsInVzZXJfaWQiOiJBRE1JTiIsImlhdCI6MTY1ODI4NzY0OSwiZXhwIjoxNjU4Mzc0MDQ5fQ.5NLN8EQYTBc-l4ndbqqk70qqDJBJZXTgQxPgpUKaiUE
