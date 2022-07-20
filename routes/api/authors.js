@@ -136,9 +136,9 @@ router.get("/", async (req, res) => {
         }))
 });
 
-// @Route GET api/authors_all
-// @desc Returns All Public, Approved, and Visible Authors
-// @access Public
+// @Route GET api/authors
+// @desc Changes Author active status
+// @access Private(Admin)
 router.get("/authors_all", authenticate, async (req, res) => {
     if (req.user.user_id !== process.env.ADMIN_PUBLIC) {
         return res.status(400).json({
@@ -147,7 +147,6 @@ router.get("/authors_all", authenticate, async (req, res) => {
         })
     }
     await Author.find({
-        is_active: true,
     })
         .sort({
             title: 1
@@ -165,6 +164,42 @@ router.get("/authors_all", authenticate, async (req, res) => {
             message: err,
             success: false
         }))
+});
+
+// @Route PUT api/articles/approval
+// @desc Change Approval Of An Article
+// @access Private(Admin)
+router.put("/approval", authenticate, async (req, res) => {
+    if (req.user.user_id !== process.env.ADMIN_PUBLIC) {
+        return res.status(400).json({
+            success: false,
+            message: 'Unauthorized'
+        })
+    }
+    await Author
+        .findByIdAndUpdate(req.body.id, { is_active: req.body.is_active }, {
+            new: false
+        })
+        .then(author => {
+            if (author !== null) {
+                res.json(author)
+            } else {
+                res.status(404).json({
+                    message: "Not Found",
+                    success: false
+                })
+            }
+
+        })
+        .catch(
+            (err) => {
+
+                res.status(500).json({
+                    message: err,
+                    success: false
+                });
+
+            });
 });
 
 

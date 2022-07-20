@@ -52,6 +52,26 @@ const ArticleSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    reads: {
+        type: Number,
+        default: 0
+    },
+    previous_read: {
+        type: Number,
+        default: 0
+    },
+    current_read: {
+        type: Number,
+        default: 0
+    },
+    previous_read_on: {
+        type: Number,
+        default: Date.now
+    },
+    current_read_on: {
+        type: Number,
+        default: Date.now
+    }
 
 }, {
     timestamps: true

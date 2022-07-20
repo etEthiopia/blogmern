@@ -34,9 +34,10 @@ Content-Type: application/json
 
 DELETE http://localhost:5000/articles/
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZDc1Y2I1YzM1YjM3YTg0NzUwZmVlMSIsInVzZXJfaWQiOiJxd2VydHl1aW9wIiwiaWF0IjoxNjU4Mjg1NTE4LCJleHAiOjE2NjM0Njk1MTh9.9lPl0V0kEFSEYjpgLjK3PU0w3RNhTfwkwaHSN5vns80
 
 {
- "id": "62d76e49d83c194c2b891c87"
+ "id": "62d7c37d1ab11268dc08faa2"
 }
 
 
@@ -69,6 +70,22 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZDc3NWNjMTAxNmI1
 {
  "id": "62d76e6ad83c194c2b891c8a",
  "is_approved": true
+}
+
+###
+GET http://localhost:5000/authors/authors_all/
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZDc3NWNjMTAxNmI1OWRiZGU0ZjBjMSIsInVzZXJfaWQiOiJBSUBBRkZBQkxFIiwiaWF0IjoxNjU4Mjg4MDE0LCJleHAiOjE2NTgzNzQ0MTR9.bhsr8A9zY1-LsLkuHQCd0PHjCOQJP6IAo0lcSfOrJHo
+
+
+###
+PUT http://localhost:5000/authors/approval/
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZDc3NWNjMTAxNmI1OWRiZGU0ZjBjMSIsInVzZXJfaWQiOiJBSUBBRkZBQkxFIiwiaWF0IjoxNjU4Mjg4MDE0LCJleHAiOjE2NTgzNzQ0MTR9.bhsr8A9zY1-LsLkuHQCd0PHjCOQJP6IAo0lcSfOrJHo
+
+{
+ "id": "62d75cb5c35b37a84750fee1",
+ "is_active": false
 }
 
 
@@ -119,5 +136,16 @@ Content-Type: application/json
     "email": "daginegussu@gmail.com",
     "password": "A@123456"
 }
+###
+
+PUT http://localhost:5000/articles/read
+Content-Type: application/json
+
+{
+    "id": "62d7c7f2ad297bab9722b9a1"
+}
+
+
+
 
 //token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZDc3NWNjMTAxNmI1OWRiZGU0ZjBjMSIsInVzZXJfaWQiOiJBRE1JTiIsImlhdCI6MTY1ODI4NzY0OSwiZXhwIjoxNjU4Mzc0MDQ5fQ.5NLN8EQYTBc-l4ndbqqk70qqDJBJZXTgQxPgpUKaiUE

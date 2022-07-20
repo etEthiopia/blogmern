@@ -30,7 +30,15 @@ const AuthorSchema = mongoose.Schema({
     is_active: {
         type: Boolean,
         default: true,
-    }
+    },
+    reads: {
+        type: Number,
+        default: 0
+    },
+    articles: {
+        type: Number,
+        default: 0
+    },
 
 }, {
     timestamps: true

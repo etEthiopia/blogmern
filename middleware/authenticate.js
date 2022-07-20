@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 // @access Public
 function authenticate(req, res, next) {
     const token = req.header('Authorization');
-    console.log(token);
+
 
     // Check for token
     if (!token) {

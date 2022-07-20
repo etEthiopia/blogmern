@@ -5,6 +5,7 @@ const authenticate = require('../../middleware/authenticate')
 
 // Article Model
 const Article = require("../../models/Article");
+const Author = require("../../models/Author");
 
 // @Route GET api/articles
 // @desc Returns All Public, Approved, and Visible Articles
@@ -132,18 +133,25 @@ router.put("/", authenticate, async (req, res) => {
             });
 });
 
-
 // @Route PUT api/articles/publish
 // @desc Publish An Article
 // @access Private(Author)
 router.put("/publish", authenticate, async (req, res) => {
     await Article
-        .findByIdAndUpdate(req.body.id, { is_draft: false }, {
+        .findByIdAndUpdate(req.body.id, { is_draft: false, }, {
             new: false
         })
         .then(article => {
             if (article !== null) {
-                res.json(article)
+                Author.findOneAndUpdate({ user_id: req.user.user_id }, { $inc: { articles: 1 }, })
+                    .then(() => {
+                        res.json(article)
+                    })
+                    .catch(
+                        (err) => {
+                            res.json({ ...article, message: err })
+                        });
+
             } else {
                 res.status(404).json({
                     message: "Not Found",
@@ -173,7 +181,14 @@ router.put("/visibility", authenticate, async (req, res) => {
         })
         .then(article => {
             if (article !== null) {
-                res.json(article)
+                Author.findOneAndUpdate({ user_id: req.user.user_id }, { $inc: { articles: article.is_visible && !req.body.is_visible - 1 ? !article.is_visible && req.body.is_visible ? 1 : 0 : 0 }, })
+                    .then(() => {
+                        res.json(article)
+                    })
+                    .catch(
+                        (err) => {
+                            res.json({ ...article, message: err })
+                        });
             } else {
                 res.status(404).json({
                     message: "Not Found",
@@ -210,7 +225,15 @@ router.put("/approval", authenticate, async (req, res) => {
         })
         .then(article => {
             if (article !== null) {
-                res.json(article)
+                // res.json(article)
+                Author.findOneAndUpdate({ user_id: req.user.user_id }, { $inc: { articles: article.is_approved && !req.body.is_approved - 1 ? !article.is_approved && req.body.is_approved ? 1 : 0 : 0 }, })
+                    .then(() => {
+                        res.json(article)
+                    })
+                    .catch(
+                        (err) => {
+                            res.json({ ...article, message: err })
+                        });
             } else {
                 res.status(404).json({
                     message: "Not Found",
@@ -283,6 +306,132 @@ router.get("/", authenticate, async (req, res) => {
             message: err,
             success: false
         }))
+});
+
+
+// @Route PUT api/read/
+// @desc Increment Read Of An Article
+// @access Public
+router.put("/read", async (req, res) => {
+    const { id, author_user_id } = req.body;
+    await Article.findById(
+        id
+    ).then(current_article => {
+        if (current_article === null) {
+            return res.status(404).json({
+                success: false,
+                message: 'Not Found'
+            })
+        }
+        if (author_user_id !== current_article.author_user_id) {
+            return res.status(404).json({
+                success: false,
+                message: 'Not Found'
+            })
+        }
+        Author.findOneAndUpdate(
+            {
+                user_id: author_user_id
+            }, {
+            $inc: { reads: 1 },
+        }, {
+            new: false
+        }
+        )
+            .then(() => {
+
+
+
+                const c_previous_read_on = current_article.previous_read_on;
+                const c_date = Date.now();
+                //Days 1000 * 3600
+                const diffDays = ((c_date - c_previous_read_on) / (1000 * 60)) % 60;
+                if (diffDays > 1) {
+                    Article
+                        .findOneAndUpdate({
+                            id: id,
+                            is_visible: true,
+                            is_approved: true,
+                            is_draft: false
+                        }, {
+                            current_read: 1,
+                            previous_read: current_article.current_read,
+                            previous_read_on: current_article.current_read_on,
+                            current_read_on: c_date,
+                            $inc: { reads: 1 },
+                        }, {
+                            new: false
+                        })
+                        .then(article => {
+                            if (article !== null) {
+                                res.json({
+                                    success: true
+                                })
+                            } else {
+                                res.status(404).json({
+                                    message: "Not Found",
+                                    success: false
+                                })
+                            }
+
+                        })
+                        .catch(
+                            (err) => {
+
+                                res.status(500).json({
+                                    message: err,
+                                    success: false
+                                });
+
+                            });
+                }
+                else {
+                    Article
+                        .findOneAndUpdate({
+                            id: id,
+                            is_visible: true,
+                            is_approved: true,
+                            is_draft: false
+                        }, {
+                            current_read_on: c_date,
+                            $inc: { reads: 1, current_read: 1 },
+                        }, {
+                            new: false
+                        })
+                        .then(article => {
+                            if (article !== null) {
+                                res.json({
+                                    success: true
+                                })
+                            } else {
+                                res.status(404).json({
+                                    message: "Not Found",
+                                    success: false
+                                })
+                            }
+
+                        })
+                        .catch(
+                            (err) => {
+
+                                res.status(500).json({
+                                    message: err,
+                                    success: false
+                                });
+
+                            });
+                }
+            }).catch(
+                (err) => {
+
+                    res.status(500).json({
+                        message: err,
+                        success: false
+                    });
+
+                });
+    })
+
 });
 
 
