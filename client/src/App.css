@@ -37,6 +37,19 @@
   margin-right: 0rem;
 }
 
+.readtitle {
+  float: right;
+}
+
+.bookIcon {
+  margin-left: 5px;
+}
+
+.imageCurve {
+  border-top-left-radius: 24px !important;
+  border-bottom-right-radius: 24px !important;
+}
+
 .newsCard img {
   border-top-left-radius: 24px;
   border-top-right-radius: 6px !important;
@@ -166,4 +179,72 @@ h4 {
   cursor: pointer;
   display: flex;
   align-items: center;
+}
+
+/* Single Post */
+.singlePost {
+  flex: 9;
+}
+
+.singlePostWrapper {
+  padding: 20px 150px;
+}
+
+.singlePostImg {
+  width: 100%;
+  height: 300px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.singlePostTitle {
+  text-align: center;
+  margin: 10px;
+  font-size: 28px;
+}
+
+.singlePostEdit {
+  float: right;
+  font-size: 16px;
+}
+
+.singlePostIcon {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.singlePostIcon:first-child {
+  color: teal;
+}
+.singlePostIcon:last-child {
+  color: tomato;
+}
+
+.singlePostInfo {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  color: #be9656;
+}
+
+.singlePostAuthor {
+  margin-left: 5px;
+}
+
+.singlePostDesc {
+  color: #666;
+  font-size: 18px;
+  line-height: 25px;
+  text-align: justify;
+}
+
+.singlePostDesc::first-letter {
+  margin-left: 20px;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.trendingTitle {
+  text-align: center;
 }

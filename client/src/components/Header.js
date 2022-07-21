@@ -14,7 +14,7 @@ class Header extends Component {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
                             <Nav.Link href="/">Home</Nav.Link>
-                            <Nav.Link href="/authors">Authors</Nav.Link>
+                            <Nav.Link href="/trending">Trending</Nav.Link>
                             <Nav.Link href="/write">Write</Nav.Link>
                         </Nav>
                         {isAuthenticated ? (
@@ -29,7 +29,7 @@ class Header extends Component {
                                         href="/"
                                         onClick={(e) => {
                                             e.preventDefault();
-                                            this.props.Logout();
+                                            this.props.logout();
                                         }}
                                     >
                                         Log Out
@@ -57,7 +57,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        Logout: () => dispatch(Logout()),
+        logout: () => dispatch(Logout()),
     };
 };
 

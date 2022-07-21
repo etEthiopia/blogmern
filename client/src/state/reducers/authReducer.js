@@ -50,8 +50,9 @@ const authReducer = (state = initialState, action) => {
                 isLoading: false
             };
         case LOGIN_FAIL:
+        case REGISTER_FAIL:
             localStorage.removeItem('blogtoken');
-            toast.error("Error");
+            toast.error("Authentication Error");
             console.log(action.payload)
             return {
                 ...state,
@@ -61,10 +62,16 @@ const authReducer = (state = initialState, action) => {
                 isLoading: false
             };
         case AUTH_ERROR:
+            console.log(action.payload)
+            return {
+                ...state,
+                isLoading: false,
+                isAuthenticated: false,
+            }
+
         case LOGOUT_SUCCESS:
-        case REGISTER_FAIL:
-            // toast.error("Error");
-            //localStorage.removeItem('blogtoken');
+            //toast.error("Error");
+            localStorage.removeItem('blogtoken');
             return {
                 ...state,
                 token: null,

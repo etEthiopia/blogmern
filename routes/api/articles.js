@@ -145,7 +145,6 @@ router.get("/author/:user_id", async (req, res) => {
 // @desc Upload Thumbnail for an Article
 // @access Public
 router.post("/upload_thumbnail", upload.single("file"), (req, res) => {
-    console.log(req.body);
     res.status(201).json({ success: true });
 });
 
@@ -251,7 +250,6 @@ router.get("/author_article/:slug", authenticate, async (req, res) => {
 // @access Private(Author)
 router.put("/", authenticate, async (req, res) => {
     const { title, content, id } = req.body;
-    console.log(req.body);
     await Article
         .findByIdAndUpdate(id, { title: title, content: content, is_edited: true }, {
             new: false
@@ -474,10 +472,12 @@ router.get("/my_articles/:page", authenticate, async (req, res) => {
 // @desc Increment Read Of An Article
 // @access Public
 router.put("/read", async (req, res) => {
-    const { id, author_user_id } = req.body;
+    const id = req.body._id;
+    const author_user_id = req.body.author_user_id;
     await Article.findById(
         id
     ).then(current_article => {
+
         if (current_article === null) {
             return res.status(404).json({
                 success: false,
@@ -490,6 +490,7 @@ router.put("/read", async (req, res) => {
                 message: 'Not Found'
             })
         }
+
         Author.findOneAndUpdate(
             {
                 user_id: author_user_id
@@ -507,7 +508,6 @@ router.put("/read", async (req, res) => {
                 //Days 1000 * 3600
                 const pureTimeDiff = (c_date - c_previous_read_on) / 1000;
                 const diffDays = (pureTimeDiff / 60) % 60;
-                console.log(diffDays);
                 if (diffDays > 1) {
                     Article
                         .findOneAndUpdate({

@@ -96,8 +96,8 @@ Content-Type: application/json
 
 {
     "full_name": "Elias Meseret",
-    "user_id": "qwertyuiop",
-    "email": "eliasmeseret@gmail.com",
+    "user_id": "wqerqwrwq",
+    "email": "qqqqq@gmail.com",
     "password": "A@123456",
     "profile_pic": "Elias Meseret",
     "is_active": true
@@ -144,6 +144,11 @@ Content-Type: application/json
 {
     "id": "62d7c7f2ad297bab9722b9a1"
 }
+
+###
+
+GET http://localhost:5000/articles/ninth_article
+
 
 
 

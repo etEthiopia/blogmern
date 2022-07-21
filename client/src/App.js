@@ -14,6 +14,8 @@ import Loading from './components/Loading';
 import WriteArticle from './pages/article/WriteEditArticle';
 import AuthorArticles from './pages/article/AuthorArticles';
 import WriteEditArticle from './pages/article/WriteEditArticle';
+import TrendingArticles from './pages/article/TrendingArticles';
+import SignUp from './pages/auth/Signup';
 
 class App extends Component {
 
@@ -50,9 +52,11 @@ class App extends Component {
               <div>
                 <Route path="/read/:slug" component={SingleArticle} />
                 <Route path="/login" component={this.state.isAuthenticated ? ArticlesHome : SignIn} />
+                <Route path="/register" component={this.state.isAuthenticated ? ArticlesHome : SignUp} />
                 <Route path="/write" component={this.state.isAuthenticated ? WriteEditArticle : SignIn} />
                 <Route path="/edit/:slug" component={this.state.isAuthenticated ? WriteEditArticle : SignIn} />
                 <Route path="/portfolio" component={this.state.isAuthenticated ? AuthorArticles : SignIn} />
+                <Route path="/trending" component={TrendingArticles} />
                 <Route path="/" exact={true} component={ArticlesHome} />
               </div>
             )

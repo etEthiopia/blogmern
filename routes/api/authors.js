@@ -28,20 +28,20 @@ router.post("/", async (req, res) => {
     }
     // Check Duplicate Email
     await Author.findOne({
-        email
+        email: email
     })
         .then((author) => {
-            if (author) {
+            if (author !== null) {
                 res.status(400).json({
                     success: false,
                     message: 'A author is already registered with that email.'
                 })
             } else {
                 Author.findOne({
-                    user_id
+                    user_id: user_id
                 })
                     .then(author => {
-                        if (author) {
+                        if (author !== null) {
                             res.status(400).json({
                                 success: false,
                                 message: 'A author is already registered with that email.'

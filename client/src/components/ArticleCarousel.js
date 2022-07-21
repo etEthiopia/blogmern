@@ -10,7 +10,7 @@ const ArticleCarousel = (props) => {
                     key={article._id}
                     className="newsCarouselItem"
                     onClick={() => {
-                        window.open("/article/" + article.slug, "_blank").focus();
+                        window.open("/read/" + article.slug, "_blank").focus();
                     }}
                 >
                     <img

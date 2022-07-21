@@ -21,3 +21,7 @@ export const slugGenerator = (title) => {
         .replace(/[\s_-]+/g, '_')
         .replace(/^-+|-+$/g, '');
 }
+
+export const usernameGenerator = () => {
+    return (Math.random() + 1).toString(36).substring(2);
+}

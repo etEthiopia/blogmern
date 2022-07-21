@@ -62,7 +62,7 @@ class WriteEditArticle extends Component {
                     ) : (
                         <div className="write">
             
-                                <img className="writeImg" src={ this.state.file !== null ? URL.createObjectURL(this.state.file): this.state.id === ""? this.state.thumbnail: IMAGES_URL+this.state.thumbnail} alt="" />
+                                <img className="writeImg imageCurve" src={ this.state.file !== null ? URL.createObjectURL(this.state.file): this.state.id === ""? this.state.thumbnail: IMAGES_URL+this.state.thumbnail} alt="" />
             
                             <form className="writeForm" onSubmit={this.handleSubmit}>
                                     <div className="writeFormGroup">

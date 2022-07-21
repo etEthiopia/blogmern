@@ -3,7 +3,7 @@ import { Card, Col, Row, ButtonGroup, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { IMAGES_URL } from '../config/constants';
 import { contentSlicer } from '../utils/functions';
-import { IoPencil, IoEyeOff, IoEye, IoTrash } from "react-icons/io5";
+import { IoPencil, IoEyeOff, IoEye, IoTrash, IoBook } from "react-icons/io5";
 
 const ArticleCard = (props) => {
     const { article } = props;
@@ -13,15 +13,15 @@ const ArticleCard = (props) => {
             <Card className="newsCard shadow">
                 <Card.Img variant="top" src={IMAGES_URL + article.thumbnail} />
                 <Card.Body>
-                    <Card.Title>{article.title}</Card.Title>
+                    <Card.Title>{article.title}<span className="readtitle">{article.reads}<IoBook className="bookIcon" /></span></Card.Title>
                     <Card.Text>
                         {contentSlicer(article.content)}
                     </Card.Text>
                     <Row>
                         <Col>
                             <Row>
-                                <Link to={`/author/${article.slug}`}>
-                                    {article.author_full_name}`
+                                <Link className="link" to={`/author/${article.author_user_id}`}>
+                                    {article.author_full_name}
                                 </Link>
                                 <Card.Text>
                                     {new Date(article.createdAt).toDateString()}
@@ -32,7 +32,7 @@ const ArticleCard = (props) => {
                         <Col>
 
 
-                            <Link to={`/article/${article.slug}`} className="btn btn-primary toTheRight"
+                            <Link to={`/read/${article.slug}`} className="btn btn-primary toTheRight"
                                 type="submit"
                                 rel="noreferrer"
                             >
