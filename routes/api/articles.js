@@ -402,7 +402,7 @@ router.put("/read", async (req, res) => {
                 if (diffDays > 1) {
                     Article
                         .findOneAndUpdate({
-                            id: id,
+                            _id: id,
                             is_visible: true,
                             is_approved: true,
                             is_draft: false
@@ -441,7 +441,7 @@ router.put("/read", async (req, res) => {
                 else {
                     Article
                         .findOneAndUpdate({
-                            id: id,
+                            _id: id,
                             is_visible: true,
                             is_approved: true,
                             is_draft: false
@@ -452,6 +452,7 @@ router.put("/read", async (req, res) => {
                             new: false
                         })
                         .then(article => {
+
                             if (article !== null) {
                                 res.json({
                                     success: true
