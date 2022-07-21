@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
         is_active: true,
     })
         .sort({
-            createdOn: 1
+            createdAt: 1
         })
         .then(ads => {
             if (ads.length > 0) {
@@ -34,6 +34,8 @@ router.get("/", async (req, res) => {
 // @desc Create an Ad
 // @access Private(Admin)
 router.post("/", authenticate, async (req, res) => {
+
+    const { title, company, picture, link } = req.body;
 
     if (req.user.user_id !== process.env.ADMIN_PUBLIC) {
         return res.status(400).json({
@@ -87,7 +89,7 @@ router.get("/", async (req, res) => {
     await Ad.find({
     })
         .sort({
-            createdOn: 1
+            createdAt: 1
         })
         .then(ads => {
             if (ads.length > 0) {
@@ -141,3 +143,5 @@ router.put("/", authenticate, async (req, res) => {
             });
 });
 
+
+module.exports = router;

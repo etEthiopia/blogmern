@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require("path");
 
 
 const app = express();
@@ -9,13 +10,19 @@ const app = express();
 // Bodyparser Middleware
 app.use(express.json());
 
+// Static Stoarge
+app.use("/images", express.static(path.join(__dirname, "/images")));
+
+
 // DB Config
 const db = process.env.MONGODB_URL;
 
 //Import Routes
 const articles = require("./routes/api/articles");
+const ads = require("./routes/api/ads");
 const authors = require("./routes/api/authors");
 const admins = require("./routes/api/admins");
+const categories = require("./routes/api/categories");
 const auth = require("./routes/api/auth");
 
 // Connect to MongoDB
@@ -28,8 +35,10 @@ const port = process.env.PORT || 5000;
 
 // Configure Routes
 app.use("/articles/", articles);
+app.use("/ads/", ads);
 app.use("/authors/", authors);
 app.use("/admins/", admins);
+app.use("/categories/", categories);
 app.use("/auth/", auth);
 
 

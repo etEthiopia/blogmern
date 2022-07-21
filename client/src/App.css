@@ -1,38 +1,169 @@
-.App {
+.newsLoadingDiv {
+  height: 100vh;
+}
+
+.newsLoadingDiv .spin {
+  background-color: transparent;
+}
+
+.picknewsLoadingDiv .spin {
+  background-color: transparent;
+}
+
+.spin {
   text-align: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.spin .spinner {
+  margin: 0px;
+  position: fixed;
+  top: 45%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.newsCard {
+  border-bottom-right-radius: 24px !important;
+  border-top-left-radius: 24px !important;
+  margin-top: 5rem;
+  margin-bottom: 2rem;
+  margin-left: 0rem;
+  margin-right: 0rem;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.newsCard img {
+  border-top-left-radius: 24px;
+  border-top-right-radius: 6px !important;
+}
+
+.carousel-item img {
+  height: 25rem;
+  object-fit: cover;
+  border-bottom-right-radius: 24px;
+  border-top-left-radius: 24px;
+  filter: brightness(50%);
+}
+
+.newsCarousel {
+  margin-top: 2rem;
+  box-shadow: 0 0.5rem 1remrgba (0, 0, 0, 0.15) !important;
+}
+
+.newsCarouselItem {
+  cursor: pointer;
+}
+
+.authorCover {
+  background-color: black;
+  padding: 2rem;
+}
+
+.authorCover h1,
+h2,
+h3,
+h4 {
+  color: white !important;
+}
+
+.rightSeparator {
+  margin-right: 20px;
+}
+
+.editButtons {
+  margin-top: 5px;
+}
+
+.toTheRight {
+  float: right;
+}
+
+#loginform {
+  margin-top: 10rem;
+  margin-bottom: 5rem;
+}
+
+#loginform h3 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.fullwidthbutton {
+  width: 100%;
+}
+
+/* Write */
+.write {
+  padding-top: 50px;
+}
+
+.writeImg {
+  margin-left: 150px;
+  width: 70vw;
+  height: 250px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.writeForm {
+  position: relative;
+}
+
+.writeFormGroup {
+  margin-left: 150px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+}
+
+.writeIcon {
+  width: 25px;
+  height: 25px;
+  font-size: 20px;
+  border: 1px solid;
+  border-radius: 50%;
+  color: rgb(129, 125, 125);
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  cursor: pointer;
+}
+
+.writeInput {
+  font-size: 30px;
+  border: none;
+  padding: 20px;
+  width: 70vw;
+}
+
+.writeInput::placeholder {
+  color: rgb(189, 185, 185);
+  font-weight: 400;
+}
+
+.writeInput:focus {
+  outline-style: none;
+}
+
+.writeText {
+  width: 70vw;
+  height: 100vh;
+  font-family: inherit;
+  font-size: 20px;
+}
+
+.writeSubmit {
+  position: absolute;
+  top: 20px;
+  right: 100px;
   color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }

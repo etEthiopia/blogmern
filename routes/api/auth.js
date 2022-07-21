@@ -8,6 +8,7 @@ const Author = require("../../models/Author");
 
 // Admin Model
 const Admin = require("../../models/Admin");
+const authenticate = require("../../middleware/authenticate");
 
 // // Auth Middleware
 // const auth = require("../../middleware/auth");
@@ -21,6 +22,7 @@ router.post("/", async (req, res) => {
         email,
         password
     } = req.body;
+
 
     // Simple Validation
     if (!email || !password) {
@@ -63,7 +65,7 @@ router.post("/", async (req, res) => {
                                         }
                                         res.json({
                                             token: token,
-                                            author: {
+                                            user: {
                                                 id: author.id,
                                                 user_id: author.user_id,
                                                 profile_pic: author.profile_pic,
@@ -150,7 +152,6 @@ router.post("/admin", async (req, res) => {
                                         token: token,
                                         admin: {
                                             id: admin.id,
-                                            user_id: process.env.ADMIN_PUBLIC,
                                             full_name: admin.full_name,
                                             email: admin.email
                                         },
@@ -178,14 +179,14 @@ router.post("/admin", async (req, res) => {
 });
 
 
-// @Route GET api/auth/author
-// @desc Get author data
+// @Route GET api/auth/user
+// @desc Get user data
 // @access Private
-// router.get('/author', auth, (req, res) => {
-//     Author.findById(req.user.id)
-//         .select('-password')
-//         .then(author => res.json(author));
-// })
+router.get('/user', authenticate, (req, res) => {
+    Author.findById(req.user.id)
+        .select('-password')
+        .then(user => res.json(user));
+})
 
 
 module.exports = router;

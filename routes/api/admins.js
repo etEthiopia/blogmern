@@ -73,7 +73,6 @@ router.post("/", async (req, res) => {
                                             admin: {
                                                 id: admin.id,
                                                 full_name: admin.full_name,
-                                                user_id: process.env.ADMIN_PUBLIC,
                                                 email: admin.email
 
                                             },

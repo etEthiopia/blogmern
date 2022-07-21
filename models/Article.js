@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 // Article Schema
 const ArticleSchema = mongoose.Schema({
@@ -56,10 +57,6 @@ const ArticleSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
-    previous_read: {
-        type: Number,
-        default: 0
-    },
     current_read: {
         type: Number,
         default: 0
@@ -71,11 +68,16 @@ const ArticleSchema = mongoose.Schema({
     current_read_on: {
         type: Number,
         default: Date.now
+    },
+    trending: {
+        type: Number,
+        default: 0
     }
 
 }, {
     timestamps: true
 });
 
+ArticleSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('Article', ArticleSchema);

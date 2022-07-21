@@ -1,11 +1,26 @@
 const router = require("express").Router();
 
+// Upload
+const multer = require("multer");
+
 // Middleware
 const authenticate = require('../../middleware/authenticate')
 
 // Article Model
 const Article = require("../../models/Article");
 const Author = require("../../models/Author");
+
+// Multer Config
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "images");
+    },
+    filename: (req, file, cb) => {
+        cb(null, req.body.name);
+    },
+});
+
+const upload = multer({ storage: storage });
 
 // @Route GET api/articles
 // @desc Returns All Public, Approved, and Visible Articles
@@ -17,7 +32,7 @@ router.get("/", async (req, res) => {
         is_draft: false
     })
         .sort({
-            createdOn: -1
+            createdAt: -1
         })
         .then(articles => {
             if (articles.length > 0) {
@@ -28,6 +43,42 @@ router.get("/", async (req, res) => {
 
         })
 
+        .catch(err => res.json({
+            message: err,
+            success: false
+        }))
+});
+
+// @Route GET api/latest/:page
+// @desc Returns Paginated Public, Approved, and Visible Articles
+// @access Public
+router.get("/latest/:page", async (req, res) => {
+    await Article.paginate({
+        is_visible: true,
+        is_approved: true,
+        is_draft: false
+    }, { page: req.params.page, limit: 5, sort: { createdAt: -1 } })
+        .then(articles =>
+            res.json(articles)
+        )
+        .catch(err => res.json({
+            message: err,
+            success: false
+        }))
+});
+
+// @Route GET api/latest/:page
+// @desc Returns Paginated Public, Approved, and Visible Articles
+// @access Public
+router.get("/trending/:page/:limit", async (req, res) => {
+    await Article.paginate({
+        is_visible: true,
+        is_approved: true,
+        is_draft: false
+    }, { page: req.params.page, limit: req.params.limit, sort: { trending: -1 } })
+        .then(articles =>
+            res.json(articles)
+        )
         .catch(err => res.json({
             message: err,
             success: false
@@ -45,7 +96,7 @@ router.get("/category/:name", async (req, res) => {
         category: req.params.name
     })
         .sort({
-            createdOn: -1
+            createdAt: -1
         })
         .then(articles => {
             if (articles.length > 0) {
@@ -73,7 +124,7 @@ router.get("/author/:user_id", async (req, res) => {
         author_user_id: req.params.user_id
     })
         .sort({
-            createdOn: -1
+            createdAt: -1
         })
         .then(articles => {
             if (articles.length > 0) {
@@ -88,6 +139,14 @@ router.get("/author/:user_id", async (req, res) => {
             message: err,
             success: false
         }))
+});
+
+// @Route POST api/upload_thumbnail
+// @desc Upload Thumbnail for an Article
+// @access Public
+router.post("/upload_thumbnail", upload.single("file"), (req, res) => {
+    console.log(req.body);
+    res.status(201).json({ success: true });
 });
 
 // @Route POST api/articles
@@ -157,14 +216,44 @@ router.get("/:slug", async (req, res) => {
         }));
 });
 
+// @Route POST api/articles/:slug
+// @desc Get an Authors Article
+// @access Private(Author)
+router.get("/author_article/:slug", authenticate, async (req, res) => {
+    await Article.findOne({
+        author_user_id: req.user.user_id,
+        slug: req.params.slug
+    })
+        .then(article => {
+            if (article === null) {
+                res.status(404).json({
+                    message: "Not Found",
+                    success: false
+                })
+            } else {
+                res.status(200).json(article)
+            }
+        })
+        .catch(
+            (err) =>
+                res.status(500).json({
+                    message: err,
+                    success: false
+                }))
+
+
+
+});
+
 
 // @Route PUT api/articles/
 // @desc Change Title, Content, Category, And Picture Of An Article
 // @access Private(Author)
 router.put("/", authenticate, async (req, res) => {
-    const { title, category, content, thumbnail } = req.body;
+    const { title, content, id } = req.body;
+    console.log(req.body);
     await Article
-        .findByIdAndUpdate(req.body.id, { title: title, content: content, thumbnail: thumbnail, category: category, is_edited: true }, {
+        .findByIdAndUpdate(id, { title: title, content: content, is_edited: true }, {
             new: false
         })
         .then(article => {
@@ -310,9 +399,9 @@ router.put("/approval", authenticate, async (req, res) => {
 
 // @Route DELETE api/articles/
 // @desc Delete an Article
-// @access Private(Author)
-router.delete("/", authenticate, async (req, res) => {
-    Article.findByIdAndDelete(req.body.id)
+// @access Private(Author) authenticate
+router.delete("/:id", authenticate, async (req, res) => {
+    Article.findByIdAndDelete(req.params.id)
         .then((article) => {
             if (article !== null) {
                 res.json(
@@ -344,7 +433,7 @@ router.get("/", authenticate, async (req, res) => {
     await Article.find({
     })
         .sort({
-            createdOn: -1
+            createdAt: -1
         })
         .then(articles => {
             if (articles.length > 0) {
@@ -352,6 +441,25 @@ router.get("/", authenticate, async (req, res) => {
             } else {
                 res.status(204).json(articles)
             }
+
+        })
+
+        .catch(err => res.json({
+            message: err,
+            success: false
+        }))
+});
+
+
+// @Route GET api/my_articles/:page
+// @desc Returns My Articles
+// @access Private(Author)
+router.get("/my_articles/:page", authenticate, async (req, res) => {
+    await Article.paginate({
+        author_user_id: req.user.user_id
+    }, { page: req.params.page, limit: 5, sort: { createdAt: -1 } })
+        .then(articles => {
+            res.json(articles);
 
         })
 
@@ -394,11 +502,12 @@ router.put("/read", async (req, res) => {
             .then(() => {
 
 
-
                 const c_previous_read_on = current_article.previous_read_on;
                 const c_date = Date.now();
                 //Days 1000 * 3600
-                const diffDays = ((c_date - c_previous_read_on) / (1000 * 60)) % 60;
+                const pureTimeDiff = (c_date - c_previous_read_on) / 1000;
+                const diffDays = (pureTimeDiff / 60) % 60;
+                console.log(diffDays);
                 if (diffDays > 1) {
                     Article
                         .findOneAndUpdate({
@@ -408,7 +517,7 @@ router.put("/read", async (req, res) => {
                             is_draft: false
                         }, {
                             current_read: 1,
-                            previous_read: current_article.current_read,
+                            trending: 1000 / (c_date - current_article.current_read_on),
                             previous_read_on: current_article.current_read_on,
                             current_read_on: c_date,
                             $inc: { reads: 1 },
@@ -439,6 +548,7 @@ router.put("/read", async (req, res) => {
                             });
                 }
                 else {
+
                     Article
                         .findOneAndUpdate({
                             _id: id,
@@ -447,6 +557,7 @@ router.put("/read", async (req, res) => {
                             is_draft: false
                         }, {
                             current_read_on: c_date,
+                            trending: pureTimeDiff === 0 ? 0 : (current_article.current_read + 1) / pureTimeDiff,
                             $inc: { reads: 1, current_read: 1 },
                         }, {
                             new: false

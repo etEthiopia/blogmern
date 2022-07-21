@@ -9,7 +9,7 @@ function authenticate(req, res, next) {
 
     // Check for token
     if (!token) {
-
+        console.log('No Token, Unauthorized Access');
         return res.status(401).json({
             success: false,
             message: 'No Token, Unauthorized Access'
@@ -22,6 +22,7 @@ function authenticate(req, res, next) {
             req.user = decoded;
             next();
         } catch (err) {
+            console.log(err);
             res.status(400).json({
                 message: err,
                 success: false
