@@ -4,13 +4,14 @@ const authenticate = require("../../middleware/authenticate");
 // Category Model
 const Category = require("../../models/Category");
 const CategoryRepository = require("../../repositories/categoryRepository");
+const { findActiveCategoriesService, addCategoryService } = require("../../services/CategoryServices");
 const categoryRepo = new CategoryRepository();
 
 // @Route GET api/categories
 // @desc Returns All Visible Categorys
 // @access Public
 router.get("/", async (req, res) => {
-    await categoryRepo.findActiveCategories()
+    await findActiveCategoriesService()
         .then(categories =>
             res.json(categories)
         )
@@ -31,27 +32,18 @@ router.post("/", authenticate, async (req, res) => {
             message: 'Unauthorized'
         })
     }
-    const newCategory = new Category({
-        title: req.body.title
-    });
-    await newCategory
-        .save()
-        .then(category => res.status(201).json(category))
-        .catch(
-            (err) => {
-                // Duplicate Entry
-                if (err.code === 11000) {
-                    res.status(400).json({
-                        message: "Duplicate Category",
-                        success: false
-                    });
-                } else {
-                    res.status(500).json({
-                        message: err,
-                        success: false
-                    });
-                }
-            });
+    await addCategoryService(req.body.title).then((result) => {
+        console.log(result);
+        if (result.success) {
+            res.status(201).json(result.value);
+        } else {
+            if (result.message === "Duplicate Category") {
+                res.status(400).json(result);
+            } else {
+                res.status(500).json(result);
+            }
+        }
+    })
 
 });
 
@@ -65,21 +57,10 @@ router.get("/all", authenticate, async (req, res) => {
             message: 'Unauthorized'
         })
     }
-    await Category.find({
-
-    })
-        .sort({
-            title: 1
-        })
-        .then(categories => {
-            if (categories.length > 0) {
-                res.json(categories)
-            } else {
-                res.status(204).json(categories)
-            }
-
-        })
-
+    await findAllCategoriesService()
+        .then(categories =>
+            res.json(categories)
+        )
         .catch(err => res.json({
             message: err,
             success: false

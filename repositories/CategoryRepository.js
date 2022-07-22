@@ -13,6 +13,71 @@ class CategoryRepository {
             });
         return result;
     }
+
+    // Creates A New Category
+    async addCategory(title) {
+        const newCategory = new Category({
+            title: title
+        });
+        try {
+            const addedCategory = await newCategory
+                .save();
+            return {
+                success: true, value: addedCategory
+            }
+        }
+        catch (err) {
+            if (err.code === 11000) {
+                return {
+                    message: "Duplicate Category",
+                    success: false
+                };
+
+            } else {
+                return {
+                    message: err,
+                    success: false
+                };
+            }
+        }
+        // await newCategory
+        //     .save()
+        //     .then(category => {
+        //         console.log({
+        //             success: true, value: category
+        //         })
+        //         return {
+        //             success: true, value: category
+        //         }
+        //     })
+        //     .catch(
+        //         (err) => {
+        //             if (err.code === 11000) {
+
+        //                 return false
+        //                 // {
+        //                 //     message: "Duplicate Category",
+        //                 //     success: false
+        //                 // };
+        //             } else {
+        //                 return {
+        //                     message: err,
+        //                     success: false
+        //                 };
+        //             }
+        //         });
+    }
+
+    // Returns All Categories
+    async findAllCategories() {
+
+        const result = await Category.find({
+        })
+            .sort({
+                title: 1
+            });
+        return result;
+    }
 }
 
 module.exports = CategoryRepository;
