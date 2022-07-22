@@ -106,7 +106,7 @@ module.exports.readArticleService = async (id, authoruserid) => {
             id,
             {
                 current_read: 1,
-                trending: 1000 / (c_date - current_article.current_read_on),
+                trending: (1000 * current_article.current_read) / (c_date - current_article.current_read_on),
                 previous_read_on: current_article.current_read_on,
                 current_read_on: c_date,
                 $inc: { reads: 1 },

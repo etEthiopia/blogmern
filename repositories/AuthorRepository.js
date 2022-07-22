@@ -41,6 +41,15 @@ class AuthorRepository {
         }
 
     }
+
+    // Returns Authors 
+    async findAuthors() {
+        const result = await Author.find({
+        });
+        return result;
+    }
+
+
 }
 
 module.exports = AuthorRepository;

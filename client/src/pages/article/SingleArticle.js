@@ -3,25 +3,34 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { Logout } from "../../state/actions/authActions";
 import Header from "../../components/Header";
-import { Col, Container } from "react-bootstrap";
-import { GetArticle, ReadArticle } from "../../state/actions/articleActions";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { GetArticle, GetArticleComments, ReadArticle, AddArticleComment, SerachArticleComments } from "../../state/actions/articleActions";
 import Loading from "../../components/Loading";
 import Empty from "../../components/Empty";
 import { IMAGES_URL } from "../../config/constants";
+import ArticleComment from "../../components/Comment";
+import { IoAddCircle, IoSearch } from "react-icons/io5";
+
+
 
 class SingleArticle extends Component {
 
     constructor () {
         super();
         this.state = {
-            seconds: 0
+            seconds: 0,
+            commentController: 0,
+            showSearchedComments: false,
+            commentText: ""
         }
         this.timer = 0;
+
         this.countUp = this.countUp.bind(this);
     }
     componentDidMount() {
         if (this.props.match.params.slug) {
             this.props.getArticle(this.props.match.params.slug);
+
         } else {
             window.location = "/";
         }
@@ -30,9 +39,49 @@ class SingleArticle extends Component {
 
     componentDidUpdate(previousProps) {
         if (previousProps.article.article !== this.props.article.article && this.props.article.article !== null) {
+            this.props.getComments(this.props.article.article._id);
             this.startTimer();
         }
+
+        if (previousProps.article.serachedComments !== this.props.article.serachedComments) {
+            if (this.state.commentController === 2) {
+                this.setState({
+                    showSearchedComments: true
+                })
+            }
+        }
+
+
     }
+
+    handleCancel = () => {
+        this.setState({
+            commentController: 0,
+            commentText: "",
+            showSearchedComments: false,
+        })
+    }
+
+    handleSubmit = (e) => {
+        window.alert(this.state.commentController)
+        if (this.state.commentController === 1) {
+
+            this.props.addComment({
+                body: this.state.commentText,
+                article_id: this.props.article.article._id
+            });
+            this.handleCancel();
+
+        } else {
+
+            this.props.searchComment({
+                text: this.state.commentText,
+                article_id: this.props.article.article._id
+            })
+        }
+
+        e.preventDefault();
+    };
 
 
 
@@ -52,7 +101,7 @@ class SingleArticle extends Component {
         });
 
         // Check if it is enough time
-        if (seconds === 3) {
+        if (seconds === 30) {
             clearInterval(this.timer);
             this.props.readArticle(this.props.article.article);
         }
@@ -60,7 +109,7 @@ class SingleArticle extends Component {
 
 
     render() {
-        const { isLoading, article } = this.props.article;
+        const { isLoading, article, comments, serachedComments } = this.props.article;
         return (
             <div>
                 <Header />
@@ -99,7 +148,89 @@ class SingleArticle extends Component {
                                     <p className="singlePostDesc">
                                         {article.content}
                                     </p>
+                                    {comments.length > 0 &&
+                                        <div>
+                                            <br />
+                                            <hr />
+                                            <Container>
+                                                <Row>
+                                                    <Col md={6} lg={12}>
+                                                        <Row>
+                                                            <Col>
+                                                                <h3 className="commentsTitle">Comments</h3>
+                                                            </Col>
+                                                            <Col>
+                                                                {this.props.auth.isAuthenticated &&
+                                                                    <IoAddCircle onClick={() => {
+                                                                        this.setState({
+                                                                            commentController: 1,
+                                                                        })
+                                                                    }} className="commentIcons" />}
+                                                                <IoSearch onClick={() => {
+                                                                    this.setState({
+                                                                        commentController: 2,
+                                                                    })
+                                                                }} className="commentIcons" />
+                                                            </Col>
+
+                                                        </Row>
+                                                        {this.state.commentController > 0 &&
+                                                            <Form id="commentform" onSubmit={this.handleSubmit}>
+                                                                <Row>
+                                                                    <Col>
+                                                                        <Form.Control
+                                                                            className="commentInput"
+                                                                            value={this.state.commentText}
+                                                                            required
+                                                                            type="text"
+                                                                            onChange={(value) => {
+                                                                                this.setState({
+                                                                                    commentText: value.target.value,
+                                                                                });
+                                                                            }}
+                                                                            placeholder={this.state.commentController === 1 ? "Type To Add..." : "Type To Search..."}
+                                                                        />
+                                                                    </Col>
+                                                                    <Col>
+                                                                        <Button
+                                                                            variant="primary"
+                                                                            type="submit"
+                                                                        >
+                                                                            {this.state.commentController === 1 ? "Add" : "Search"}
+                                                                        </Button>
+                                                                        <Button
+                                                                            variant="light"
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                this.handleCancel()
+                                                                            }}
+                                                                        >
+
+                                                                            Cancel
+                                                                        </Button>
+
+                                                                    </Col>
+                                                                </Row>
+
+                                                            </Form>
+                                                        }
+
+                                                        {
+                                                            this.state.showSearchedComments ?
+                                                                serachedComments.length > 0 ?
+                                                                    serachedComments.map((comment) =>
+                                                                        ArticleComment(comment)
+                                                                    ) : <p>Nothing Matched Your Search</p> :
+                                                                comments.map((comment) =>
+                                                                    ArticleComment(comment)
+                                                                )
+                                                        }
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </div>}
                                 </div>
+
 
 
                             </div>) : <Empty />}
@@ -112,13 +243,17 @@ class SingleArticle extends Component {
 const mapStateToProps = (state) => {
     return {
         article: state.article,
+        auth: state.auth
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         getArticle: (slug) => dispatch(GetArticle(slug)),
-        readArticle: (article) => dispatch(ReadArticle(article))
+        getComments: (article_id) => dispatch(GetArticleComments(article_id)),
+        readArticle: (article) => dispatch(ReadArticle(article)),
+        addComment: (comment) => dispatch(AddArticleComment(comment)),
+        searchComment: (comment) => dispatch(SerachArticleComments(comment))
     };
 };
 
