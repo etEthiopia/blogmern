@@ -23,7 +23,7 @@ class ArticleRepository {
             is_visible: true,
             is_approved: true,
             is_draft: false
-        }, { page: page, limit: 9, sort: { createdAt: -1 } })
+        }, { page: page, limit: 6, sort: { createdAt: -1 } })
         return result;
     }
 
@@ -44,14 +44,14 @@ class ArticleRepository {
             is_visible: true,
             is_approved: true,
             is_draft: false
-        }, { page: page, limit: 9, sort: { reads: 1 } })
+        }, { page: page, limit: 6, sort: { reads: 1 } })
         return result;
     }
 
 
     // Returns Articles By An Author
-    async findArticlesByAuthor(filter, page) {
-        const result = await Article.paginate({ filter }, { page: page, limit: 9, sort: { createdAt: -1 } })
+    async findArticlesByAuthor(page, filter) {
+        const result = await Article.paginate(filter, { page: page, limit: 6, sort: { createdAt: -1 } })
         return result;
     }
 

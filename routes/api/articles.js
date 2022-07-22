@@ -369,7 +369,6 @@ router.put("/read", async (req, res) => {
     const author_user_id = req.body.author_user_id;
     await readArticleService(id, author_user_id)
         .then((result) => {
-            console.log(result);
             if (result !== undefined) {
                 if (result.success) {
                     res.json({

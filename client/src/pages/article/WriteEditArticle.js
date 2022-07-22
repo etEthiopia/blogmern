@@ -10,7 +10,7 @@ import { slugGenerator } from "../../utils/functions";
 import { IMAGES_URL } from "../../config/constants";
 
 class WriteEditArticle extends Component {
-    state = {file: null,id: "", title: "", content: "", thumbnail: "https://media.istockphoto.com/photos/abstract-orange-background-picture-id679762938?k=20&m=679762938&s=612x612&w=0&h=y79QcJh8Y_8-WT1dqJa6OOZKcakVSpylQHbG3CC5GOc="}
+    state = {file: null,id: "", title: "", content: "", thumbnail: "https://i.stack.imgur.com/y9DpT.jpg"}
     handleSubmit = async (e) => {
         const { file, title, content, thumbnail} = this.state;
         e.preventDefault();
