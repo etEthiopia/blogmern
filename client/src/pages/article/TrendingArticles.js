@@ -13,7 +13,7 @@ class TrendingArticles extends Component {
     state = {}
 
     componentDidMount() {
-        this.props.getTrendingArticles(1, 9);
+        this.props.getTrendingArticles(1, 6);
     }
 
 
