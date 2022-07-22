@@ -167,7 +167,18 @@ router.post("/", authenticate, async (req, res) => {
     });
     await newArticle
         .save()
-        .then(article => res.status(201).json(article))
+        .then(article => {
+            if (article !== null) {
+                Author.findOneAndUpdate({ user_id: req.user.user_id }, { $inc: { articles: 1 }, })
+                    .then(() => {
+                        res.status(201).json(article);
+                    })
+                    .catch(
+                        (err) => {
+                            res.json({ ...article, message: err })
+                        });
+            }
+        })
         .catch(
             (err) => {
                 // Duplicate Entry
