@@ -13,7 +13,7 @@ const AuthorCover = (props) => {
                     </Col>
                     {props.author.reads &&
                         <Col>
-                            <h4 className="toTheRight">{props.author.articles} Articles</h4>
+                            <h4 className="toTheRight">{props.author.articles >= 0 ? props.author.articles : "0"} Articles</h4>
                             <h4 className="toTheRight rightSeparator">{props.author.reads} Reads</h4>
 
 

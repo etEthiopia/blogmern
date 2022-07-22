@@ -33,7 +33,6 @@ router.post("/", authenticate, async (req, res) => {
         })
     }
     await addCategoryService(req.body.title).then((result) => {
-        console.log(result);
         if (result.success) {
             res.status(201).json(result.value);
         } else {

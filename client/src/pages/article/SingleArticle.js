@@ -52,7 +52,7 @@ class SingleArticle extends Component {
         });
 
         // Check if it is enough time
-        if (seconds === 30) {
+        if (seconds === 3) {
             clearInterval(this.timer);
             this.props.readArticle(this.props.article.article);
         }

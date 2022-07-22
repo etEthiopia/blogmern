@@ -5,7 +5,6 @@ import Loading from "../../components/Loading";
 import Header from "../../components/Header";
 import { Col, Container, Row, Modal, Button } from "react-bootstrap";
 import ArticleCard from "../../components/ArticleCard";
-import Empty from "../../components/Empty";
 import Paginate from "../../components/Paginate";
 import AuthorCover from "../../components/AuthorCover";
 
@@ -54,32 +53,31 @@ class AuthorArticles extends Component {
                         </Col>
                     ) :
                         articles.docs && user !== null &&
-                            articles.docs.length > 0 ?
-                            (
-                                <Row>
-                                    <Col lg={12} md={12} sm={12}>
-                                        <Row>
-                                            <AuthorCover author={user} />
-                                        </Row>
-                                        {/* props={...blog, edit: true } onChange={this.onArticleChange} */}
-                                        <Row>
-                                            {articles.docs.map((blog) => (
-                                                <ArticleCard article={blog} edit onChange={this.onArticleChange} />
-                                            ))
-                                            }
-                                        </Row>
-                                        {articles.totalPages > 1 &&
-                                            <Row>
-                                                <Paginate onChangePage={this.paginateArticles} pages={articles.totalPages} page={articles.page} />
-                                            </Row>}
 
-                                    </Col>
-                                    {/* <Col>
+                        (
+                            <Row>
+                                <Col lg={12} md={12} sm={12}>
+                                    <Row>
+                                        <AuthorCover author={user} />
+                                    </Row>
+                                    {/* props={...blog, edit: true } onChange={this.onArticleChange} */}
+                                    <Row>
+                                        {articles.docs.map((blog) => (
+                                            <ArticleCard article={blog} edit onChange={this.onArticleChange} />
+                                        ))
+                                        }
+                                    </Row>
+                                    {articles.totalPages > 1 &&
+                                        <Row>
+                                            <Paginate onChangePage={this.paginateArticles} pages={articles.totalPages} page={articles.page} />
+                                        </Row>}
+
+                                </Col>
+                                {/* <Col>
                                         <h1>Hello</h1>
                                     </Col> */}
-                                </Row>
-                            ) :
-                            <Empty message={"No Articles Found"} />
+                            </Row>
+                        )
                     }
                     <Modal
                         style={{ opacity: 1 }}

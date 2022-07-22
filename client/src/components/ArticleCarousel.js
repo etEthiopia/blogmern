@@ -1,5 +1,6 @@
 import React from 'react';
 import { Carousel } from 'react-bootstrap';
+import { IMAGES_URL } from '../config/constants';
 import { contentSlicer } from '../utils/functions';
 
 const ArticleCarousel = (props) => {
@@ -15,7 +16,7 @@ const ArticleCarousel = (props) => {
                 >
                     <img
                         className="d-block w-100"
-                        src={article.thumbnail}
+                        src={IMAGES_URL + article.thumbnail}
                         alt={article.title}
                     />
                     <Carousel.Caption>

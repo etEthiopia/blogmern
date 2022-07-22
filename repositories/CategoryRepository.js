@@ -40,32 +40,6 @@ class CategoryRepository {
                 };
             }
         }
-        // await newCategory
-        //     .save()
-        //     .then(category => {
-        //         console.log({
-        //             success: true, value: category
-        //         })
-        //         return {
-        //             success: true, value: category
-        //         }
-        //     })
-        //     .catch(
-        //         (err) => {
-        //             if (err.code === 11000) {
-
-        //                 return false
-        //                 // {
-        //                 //     message: "Duplicate Category",
-        //                 //     success: false
-        //                 // };
-        //             } else {
-        //                 return {
-        //                     message: err,
-        //                     success: false
-        //                 };
-        //             }
-        //         });
     }
 
     // Returns All Categories

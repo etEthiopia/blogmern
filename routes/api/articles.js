@@ -9,6 +9,8 @@ const authenticate = require('../../middleware/authenticate')
 // Article Model
 const Article = require("../../models/Article");
 const Author = require("../../models/Author");
+const { findPublicArticlesService, findLatestArticlesService, findTrendingArticlesService, findArticlesInCategoryService, findArticlesByAuthorService, addArticleService, findArticleBySlugService, updateArticleService, deleteArticleService, readArticleService } = require("../../services/ArticleServices");
+const { incrementArticlesService, updateAuthorArticlesService } = require("../../services/AuthorServices");
 
 // Multer Config
 const storage = multer.diskStorage({
@@ -26,24 +28,11 @@ const upload = multer({ storage: storage });
 // @desc Returns All Public, Approved, and Visible Articles
 // @access Public
 router.get("/", async (req, res) => {
-    await Article.find({
-        is_visible: true,
-        is_approved: true,
-        is_draft: false
-    })
-        .sort({
-            createdAt: -1
-        })
+    await findPublicArticlesService(false)
         .then(articles => {
-            if (articles.length > 0) {
-                res.json(articles)
-            } else {
-                res.status(204).json(articles)
-            }
-
+            res.json(articles);
         })
-
-        .catch(err => res.json({
+        .catch(err => res.status(500).json({
             message: err,
             success: false
         }))
@@ -53,11 +42,8 @@ router.get("/", async (req, res) => {
 // @desc Returns Paginated Public, Approved, and Visible Articles
 // @access Public
 router.get("/latest/:page", async (req, res) => {
-    await Article.paginate({
-        is_visible: true,
-        is_approved: true,
-        is_draft: false
-    }, { page: req.params.page, limit: 5, sort: { createdAt: -1 } })
+
+    await findLatestArticlesService(req.params.page)
         .then(articles =>
             res.json(articles)
         )
@@ -71,11 +57,7 @@ router.get("/latest/:page", async (req, res) => {
 // @desc Returns Paginated Public, Approved, and Visible Articles
 // @access Public
 router.get("/trending/:page/:limit", async (req, res) => {
-    await Article.paginate({
-        is_visible: true,
-        is_approved: true,
-        is_draft: false
-    }, { page: req.params.page, limit: req.params.limit, sort: { trending: -1 } })
+    await findTrendingArticlesService(req.params.page, req.params.limit)
         .then(articles =>
             res.json(articles)
         )
@@ -88,25 +70,13 @@ router.get("/trending/:page/:limit", async (req, res) => {
 // @Route GET api/category/:id
 // @desc Returns All Public, Approved, and Visible Articles Searched On Categories 
 // @access Public
-router.get("/category/:name", async (req, res) => {
-    await Article.find({
-        is_visible: true,
-        is_approved: true,
-        is_draft: false,
-        category: req.params.name
-    })
-        .sort({
-            createdAt: -1
-        })
+router.get("/category/:name:/page", async (req, res) => {
+
+    await findArticlesInCategoryService(req.params.name, req.params.page)
         .then(articles => {
-            if (articles.length > 0) {
-                res.json(articles)
-            } else {
-                res.status(204).json(articles)
-            }
+            res.json(articles);
 
         })
-
         .catch(err => res.json({
             message: err,
             success: false
@@ -116,25 +86,12 @@ router.get("/category/:name", async (req, res) => {
 // @Route GET api/author/:user_id
 // @desc Returns All Public, Approved, and Visible Articles Searched On Authors 
 // @access Public
-router.get("/author/:user_id", async (req, res) => {
-    await Article.find({
-        is_visible: true,
-        is_approved: true,
-        is_draft: false,
-        author_user_id: req.params.user_id
-    })
-        .sort({
-            createdAt: -1
-        })
+router.get("/author/:user_id/:page", async (req, res) => {
+    await findArticlesByAuthorService(req.params.user_id, req.params.page, true)
         .then(articles => {
-            if (articles.length > 0) {
-                res.json(articles)
-            } else {
-                res.status(204).json(articles)
-            }
+            res.json(articles);
 
         })
-
         .catch(err => res.json({
             message: err,
             success: false
@@ -152,48 +109,19 @@ router.post("/upload_thumbnail", upload.single("file"), (req, res) => {
 // @desc Create an Article
 // @access Private(Author)
 router.post("/", authenticate, async (req, res) => {
-
-    const { title, category, content, author_full_name, slug, thumbnail, is_draft } = req.body;
-
-    const newArticle = new Article({
-        title: title,
-        category: category,
-        content: content,
-        author_user_id: req.user.user_id,
-        author_full_name: author_full_name,
-        thumbnail: thumbnail,
-        slug: slug,
-        is_draft: is_draft
-    });
-    await newArticle
-        .save()
-        .then(article => {
-            if (article !== null) {
-                Author.findOneAndUpdate({ user_id: req.user.user_id }, { $inc: { articles: 1 }, })
-                    .then(() => {
-                        res.status(201).json(article);
-                    })
-                    .catch(
-                        (err) => {
-                            res.json({ ...article, message: err })
-                        });
+    await addArticleService(req.body, req.user.user_id)
+        .then(result => {
+            if (result.success) {
+                res.status(201).json(result.value);
+            } else {
+                if (result.message === "Duplicate Slug") {
+                    res.status(400).json(result);
+                } else {
+                    res.status(500).json(result);
+                }
             }
         })
-        .catch(
-            (err) => {
-                // Duplicate Entry
-                if (err.code === 11000) {
-                    res.status(400).json({
-                        message: "Duplicate Slug",
-                        success: false
-                    });
-                } else {
-                    res.status(500).json({
-                        message: err,
-                        success: false
-                    });
-                }
-            });
+
 
 });
 
@@ -202,12 +130,7 @@ router.post("/", authenticate, async (req, res) => {
 // @desc Returns A Single Public, Approved, and Visible Article By Slug
 // @access Public
 router.get("/:slug", async (req, res) => {
-    await Article.findOne({
-        is_visible: true,
-        is_approved: true,
-        is_draft: false,
-        slug: req.params.slug
-    })
+    await findArticleBySlugService(req.params.slug)
         .then(article => {
             if (article !== null) {
                 res.json(article)
@@ -230,10 +153,7 @@ router.get("/:slug", async (req, res) => {
 // @desc Get an Authors Article
 // @access Private(Author)
 router.get("/author_article/:slug", authenticate, async (req, res) => {
-    await Article.findOne({
-        author_user_id: req.user.user_id,
-        slug: req.params.slug
-    })
+    await findArticleBySlugService(req.params.slug, req.user.user_id)
         .then(article => {
             if (article === null) {
                 res.status(404).json({
@@ -261,13 +181,10 @@ router.get("/author_article/:slug", authenticate, async (req, res) => {
 // @access Private(Author)
 router.put("/", authenticate, async (req, res) => {
     const { title, content, id } = req.body;
-    await Article
-        .findByIdAndUpdate(id, { title: title, content: content, is_edited: true }, {
-            new: false
-        })
-        .then(article => {
-            if (article !== null) {
-                res.json(article)
+    await updateArticleService(id, { title: title, content: content, is_edited: true }, null)
+        .then(result => {
+            if (result.success) {
+                res.json(result.value)
             } else {
                 res.status(404).json({
                     message: "Not Found",
@@ -291,21 +208,10 @@ router.put("/", authenticate, async (req, res) => {
 // @desc Publish An Article
 // @access Private(Author)
 router.put("/publish", authenticate, async (req, res) => {
-    await Article
-        .findByIdAndUpdate(req.body.id, { is_draft: false, }, {
-            new: false
-        })
-        .then(article => {
-            if (article !== null) {
-                Author.findOneAndUpdate({ user_id: req.user.user_id }, { $inc: { articles: 1 }, })
-                    .then(() => {
-                        res.json(article)
-                    })
-                    .catch(
-                        (err) => {
-                            res.json({ ...article, message: err })
-                        });
-
+    await updateArticleService(req.body.id, { is_draft: false }, true)
+        .then(result => {
+            if (result.success) {
+                res.json(result.value);
             } else {
                 res.status(404).json({
                     message: "Not Found",
@@ -329,20 +235,11 @@ router.put("/publish", authenticate, async (req, res) => {
 // @desc Change Visibility Of An Article
 // @access Private(Author)
 router.put("/visibility", authenticate, async (req, res) => {
-    await Article
-        .findByIdAndUpdate(req.body.id, { is_visible: req.body.is_visible }, {
-            new: false
-        })
-        .then(article => {
-            if (article !== null) {
-                Author.findOneAndUpdate({ user_id: req.user.user_id }, { $inc: { articles: article.is_visible && !req.body.is_visible - 1 ? !article.is_visible && req.body.is_visible ? 1 : 0 : 0 }, })
-                    .then(() => {
-                        res.json(article)
-                    })
-                    .catch(
-                        (err) => {
-                            res.json({ ...article, message: err })
-                        });
+    await updateArticleService(req.body.id, { is_visible: req.body.is_visible }, req.body.is_visible)
+        .then(result => {
+            if (result.success) {
+                res.json(result.value)
+
             } else {
                 res.status(404).json({
                     message: "Not Found",
@@ -372,21 +269,11 @@ router.put("/approval", authenticate, async (req, res) => {
             message: 'Unauthorized'
         })
     }
-    await Article
-        .findByIdAndUpdate(req.body.id, { is_approved: req.body.is_approved }, {
-            new: false
-        })
-        .then(article => {
-            if (article !== null) {
-                // res.json(article)
-                Author.findOneAndUpdate({ user_id: req.user.user_id }, { $inc: { articles: article.is_approved && !req.body.is_approved - 1 ? !article.is_approved && req.body.is_approved ? 1 : 0 : 0 }, })
-                    .then(() => {
-                        res.json(article)
-                    })
-                    .catch(
-                        (err) => {
-                            res.json({ ...article, message: err })
-                        });
+    await updateArticleService(req.body.id, { is_approved: req.body.is_approved }, req.body.is_approved)
+        .then(result => {
+            if (result.success) {
+                res.json(result.value)
+
             } else {
                 res.status(404).json({
                     message: "Not Found",
@@ -410,50 +297,46 @@ router.put("/approval", authenticate, async (req, res) => {
 // @desc Delete an Article
 // @access Private(Author) authenticate
 router.delete("/:id", authenticate, async (req, res) => {
-    Article.findByIdAndDelete(req.params.id)
-        .then((article) => {
-            if (article !== null) {
-                res.json(
-                    article
-                )
+    await deleteArticleService(req.params.id)
+        .then(result => {
+            if (result.success) {
+                res.json(result.value)
+
+
             } else {
                 res.status(404).json({
                     message: "Not Found",
                     success: false
                 })
             }
-        }).catch(err => res.status(500).json({
-            message: err,
-            success: false
-        }))
+        })
+        .catch(
+            (err) => {
+
+                res.status(500).json({
+                    message: err,
+                    success: false
+                });
+
+            });
 });
 
 
 // @Route GET api/articles_all
 // @desc Returns All Articles
 // @access Private(Admin)
-router.get("/", authenticate, async (req, res) => {
+router.get("/articles_all", authenticate, async (req, res) => {
     if (req.user.user_id !== process.env.ADMIN_PUBLIC) {
         return res.status(400).json({
             success: false,
             message: 'Unauthorized'
         })
     }
-    await Article.find({
-    })
-        .sort({
-            createdAt: -1
-        })
+    await findPublicArticlesService(false)
         .then(articles => {
-            if (articles.length > 0) {
-                res.json(articles)
-            } else {
-                res.status(204).json(articles)
-            }
-
+            res.json(articles);
         })
-
-        .catch(err => res.json({
+        .catch(err => res.status(500).json({
             message: err,
             success: false
         }))
@@ -464,14 +347,13 @@ router.get("/", authenticate, async (req, res) => {
 // @desc Returns My Articles
 // @access Private(Author)
 router.get("/my_articles/:page", authenticate, async (req, res) => {
-    await Article.paginate({
-        author_user_id: req.user.user_id
-    }, { page: req.params.page, limit: 5, sort: { createdAt: -1 } })
+
+    await findArticlesByAuthorService(req.user.user_id, req.params.page, false)
         .then(articles => {
+
             res.json(articles);
 
         })
-
         .catch(err => res.json({
             message: err,
             success: false
@@ -485,128 +367,24 @@ router.get("/my_articles/:page", authenticate, async (req, res) => {
 router.put("/read", async (req, res) => {
     const id = req.body._id;
     const author_user_id = req.body.author_user_id;
-    await Article.findById(
-        id
-    ).then(current_article => {
-
-        if (current_article === null) {
-            return res.status(404).json({
-                success: false,
-                message: 'Not Found'
-            })
-        }
-        if (author_user_id !== current_article.author_user_id) {
-            return res.status(404).json({
-                success: false,
-                message: 'Not Found'
-            })
-        }
-
-        Author.findOneAndUpdate(
-            {
-                user_id: author_user_id
-            }, {
-            $inc: { reads: 1 },
-        }, {
-            new: false
-        }
-        )
-            .then(() => {
-
-
-                const c_previous_read_on = current_article.previous_read_on;
-                const c_date = Date.now();
-                //Days 1000 * 3600
-                const pureTimeDiff = (c_date - c_previous_read_on) / 1000;
-                const diffDays = (pureTimeDiff / 60) % 60;
-                if (diffDays > 1) {
-                    Article
-                        .findOneAndUpdate({
-                            _id: id,
-                            is_visible: true,
-                            is_approved: true,
-                            is_draft: false
-                        }, {
-                            current_read: 1,
-                            trending: 1000 / (c_date - current_article.current_read_on),
-                            previous_read_on: current_article.current_read_on,
-                            current_read_on: c_date,
-                            $inc: { reads: 1 },
-                        }, {
-                            new: false
-                        })
-                        .then(article => {
-                            if (article !== null) {
-                                res.json({
-                                    success: true
-                                })
-                            } else {
-                                res.status(404).json({
-                                    message: "Not Found",
-                                    success: false
-                                })
-                            }
-
-                        })
-                        .catch(
-                            (err) => {
-
-                                res.status(500).json({
-                                    message: err,
-                                    success: false
-                                });
-
-                            });
+    await readArticleService(id, author_user_id)
+        .then((result) => {
+            console.log(result);
+            if (result !== undefined) {
+                if (result.success) {
+                    res.json({
+                        success: true
+                    })
+                } else {
+                    res.status(result.message === "Not Found" ? 404 : 500).json(result);
                 }
-                else {
-
-                    Article
-                        .findOneAndUpdate({
-                            _id: id,
-                            is_visible: true,
-                            is_approved: true,
-                            is_draft: false
-                        }, {
-                            current_read_on: c_date,
-                            trending: pureTimeDiff === 0 ? 0 : (current_article.current_read + 1) / pureTimeDiff,
-                            $inc: { reads: 1, current_read: 1 },
-                        }, {
-                            new: false
-                        })
-                        .then(article => {
-
-                            if (article !== null) {
-                                res.json({
-                                    success: true
-                                })
-                            } else {
-                                res.status(404).json({
-                                    message: "Not Found",
-                                    success: false
-                                })
-                            }
-
-                        })
-                        .catch(
-                            (err) => {
-
-                                res.status(500).json({
-                                    message: err,
-                                    success: false
-                                });
-
-                            });
-                }
-            }).catch(
-                (err) => {
-
-                    res.status(500).json({
-                        message: err,
-                        success: false
-                    });
-
+            } else {
+                res.status(500).json({
+                    message: "Error",
+                    success: false
                 });
-    })
+            }
+        })
 
 });
 
