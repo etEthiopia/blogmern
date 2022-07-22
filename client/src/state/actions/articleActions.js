@@ -250,7 +250,7 @@ export const AddArticleComment = commentContents => (dispatch, getState) => {
                     author_user_id: getState().auth.user.user_id,
                     author_full_name: getState().auth.user.full_name,
                     author_profile_pic: getState().auth.user.profile_pic,
-                    timestamp: res.createdAt
+                    timestamp: Date.now()
                 }
             })
         ).catch(err => dispatch({

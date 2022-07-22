@@ -63,7 +63,6 @@ class SingleArticle extends Component {
     }
 
     handleSubmit = (e) => {
-        window.alert(this.state.commentController)
         if (this.state.commentController === 1) {
 
             this.props.addComment({
