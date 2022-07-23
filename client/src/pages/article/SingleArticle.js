@@ -147,87 +147,94 @@ class SingleArticle extends Component {
                                     <p className="singlePostDesc">
                                         {article.content}
                                     </p>
-                                    {comments.length > 0 &&
-                                        <div>
-                                            <br />
-                                            <hr />
-                                            <Container>
-                                                <Row>
-                                                    <Col md={6} lg={12}>
-                                                        <Row>
-                                                            <Col>
-                                                                <h3 className="commentsTitle">Comments</h3>
-                                                            </Col>
-                                                            <Col>
-                                                                {this.props.auth.isAuthenticated &&
-                                                                    <IoAddCircle onClick={() => {
-                                                                        this.setState({
-                                                                            commentController: 1,
-                                                                        })
-                                                                    }} className="commentIcons" />}
+
+                                    <div>
+                                        <br />
+                                        <hr />
+                                        <Container>
+                                            <Row>
+                                                <Col md={6} lg={12}>
+                                                    <Row>
+                                                        <Col>
+                                                            <h3 className="commentsTitle">Comments</h3>
+                                                        </Col>
+                                                        <Col>
+                                                            {this.props.auth.isAuthenticated &&
+                                                                <IoAddCircle onClick={() => {
+                                                                    this.setState({
+                                                                        commentController: 1,
+                                                                    })
+                                                                }} className="commentIcons" />}
+                                                            {comments.length > 0 &&
                                                                 <IoSearch onClick={() => {
                                                                     this.setState({
                                                                         commentController: 2,
                                                                     })
-                                                                }} className="commentIcons" />
-                                                            </Col>
+                                                                }} className="commentIcons" />}
+                                                        </Col>
 
-                                                        </Row>
-                                                        {this.state.commentController > 0 &&
-                                                            <Form id="commentform" onSubmit={this.handleSubmit}>
-                                                                <Row>
-                                                                    <Col>
-                                                                        <Form.Control
-                                                                            className="commentInput"
-                                                                            value={this.state.commentText}
-                                                                            required
-                                                                            type="text"
-                                                                            onChange={(value) => {
-                                                                                this.setState({
-                                                                                    commentText: value.target.value,
-                                                                                });
-                                                                            }}
-                                                                            placeholder={this.state.commentController === 1 ? "Type To Add..." : "Type To Search..."}
-                                                                        />
-                                                                    </Col>
-                                                                    <Col>
-                                                                        <Button
-                                                                            variant="primary"
-                                                                            type="submit"
-                                                                        >
-                                                                            {this.state.commentController === 1 ? "Add" : "Search"}
-                                                                        </Button>
-                                                                        <Button
-                                                                            variant="light"
-                                                                            type="button"
-                                                                            onClick={() => {
-                                                                                this.handleCancel()
-                                                                            }}
-                                                                        >
+                                                    </Row>
+                                                    {this.state.commentController > 0 &&
+                                                        <Form id="commentform" onSubmit={this.handleSubmit}>
+                                                            <Row>
+                                                                <Col>
+                                                                    <Form.Control
+                                                                        className="commentInput"
+                                                                        value={this.state.commentText}
+                                                                        required
+                                                                        type="text"
+                                                                        onChange={(value) => {
+                                                                            this.setState({
+                                                                                commentText: value.target.value,
+                                                                            });
+                                                                        }}
+                                                                        placeholder={this.state.commentController === 1 ? "Type To Add..." : "Type To Search..."}
+                                                                    />
+                                                                </Col>
+                                                                <Col>
+                                                                    <Button
+                                                                        variant="primary"
+                                                                        type="submit"
+                                                                    >
+                                                                        {this.state.commentController === 1 ? "Add" : "Search"}
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="light"
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            this.handleCancel()
+                                                                        }}
+                                                                    >
 
-                                                                            Cancel
-                                                                        </Button>
+                                                                        Cancel
+                                                                    </Button>
 
-                                                                    </Col>
-                                                                </Row>
+                                                                </Col>
+                                                            </Row>
 
-                                                            </Form>
-                                                        }
+                                                        </Form>
+                                                    }
 
-                                                        {
-                                                            this.state.showSearchedComments ?
-                                                                serachedComments.length > 0 ?
-                                                                    serachedComments.map((comment) =>
-                                                                        ArticleComment(comment)
-                                                                    ) : <p>Nothing Matched Your Search</p> :
+                                                    {
+                                                        this.state.showSearchedComments ?
+                                                            serachedComments.length > 0 ?
+                                                                serachedComments.map((comment) =>
+                                                                    ArticleComment(comment)
+                                                                ) : <p>Nothing Matched Your Search</p> :
+                                                            comments.length > 0 ?
                                                                 comments.map((comment) =>
                                                                     ArticleComment(comment)
-                                                                )
-                                                        }
-                                                    </Col>
-                                                </Row>
-                                            </Container>
-                                        </div>}
+                                                                ) :
+
+                                                                <p>Be the first one to comment {!this.props.auth.isAutenticated && <Link className="link" to={"/login/"}>Click Here To Login
+                                                                </Link>}</p>
+
+
+                                                    }
+                                                </Col>
+                                            </Row>
+                                        </Container>
+                                    </div>
                                 </div>
 
 
