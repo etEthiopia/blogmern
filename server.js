@@ -23,6 +23,7 @@ const ads = require("./routes/api/ads");
 const authors = require("./routes/api/authors");
 const admins = require("./routes/api/admins");
 const categories = require("./routes/api/categories");
+const comments = require("./routes/api/comments");
 const auth = require("./routes/api/auth");
 
 // Connect to MongoDB
@@ -39,6 +40,7 @@ app.use("/ads/", ads);
 app.use("/authors/", authors);
 app.use("/admins/", admins);
 app.use("/categories/", categories);
+app.use("/comments/", comments);
 app.use("/auth/", auth);
 
 

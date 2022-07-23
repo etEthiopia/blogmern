@@ -248,3 +248,58 @@ h4 {
 .trendingTitle {
   text-align: center;
 }
+
+/* Comments */
+
+.commentsTitle {
+  color: black !important;
+}
+.comments {
+  margin-top: 5%;
+  margin-left: 20px;
+}
+
+.comment {
+  /* border: 1px solid rgba(16, 46, 46, 1); */
+  background-color: #e2e2e2;
+  border-top-left-radius: 24px !important;
+  border-bottom-right-radius: 24px !important;
+  padding-left: 40px;
+  padding-right: 30px;
+  padding-top: 10px;
+  display: inline-block;
+}
+.comment h4,
+.comment span,
+.darker h4,
+.darker span {
+  display: inline;
+}
+
+.comment h4 {
+  color: rgb(38, 38, 38) !important;
+  font-size: 20px;
+}
+
+.comment p,
+.comment span,
+.darker p,
+.darker span {
+  color: rgb(91, 91, 91);
+}
+
+.commentName {
+  margin-left: 10px;
+  margin-right: 20px;
+}
+
+.commentIcons {
+  font-size: 30px;
+  cursor: pointer;
+  float: right;
+}
+
+.commentInput {
+  display: inline-block;
+  width: 100%;
+}

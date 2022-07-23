@@ -7,7 +7,11 @@ import {
     UPDATE_ARTICLE,
     DELETE_ARTICLE,
     ARTICLES_LOADING,
-    ARTICLE_ERROR
+    ARTICLE_ERROR,
+    GET_ARTICLE_COMMENTS,
+    POST_ARTICLE_COMMENT,
+    SEARCH_ARTICLE_COMMENTS,
+    ARTICLE_COMMENT_ERROR
 } from "./types";
 
 import axios from "axios";
@@ -208,6 +212,68 @@ export const GetArticle = (slug, toEdit = false) => (dispatch, getState) => {
                 payload: err
             })
         })
+}
+
+// Get Comments By Article ID
+export const GetArticleComments = (article_id) => (dispatch, getState) => {
+    dispatch(SetArticleLoading());
+
+
+    axios.get(`/comments/${article_id}`)
+        .then(res => {
+            dispatch({
+                type: GET_ARTICLE_COMMENTS,
+                payload: res.data
+            })
+        }).catch(err => {
+            dispatch({
+                type: ARTICLE_COMMENT_ERROR,
+                payload: err
+            })
+        })
+}
+
+// Adds Comment
+export const AddArticleComment = commentContents => (dispatch, getState) => {
+    dispatch(SetArticleLoading());
+    const comment = {
+        body: commentContents.body,
+        article_id: commentContents.article_id,
+    }
+    axios.post('/comments/', comment, TokenConfig(getState))
+        .then(res =>
+            dispatch({
+                type: POST_ARTICLE_COMMENT,
+                payload: {
+                    ...comment,
+                    id: res._id,
+                    author_user_id: getState().auth.user.user_id,
+                    author_full_name: getState().auth.user.full_name,
+                    author_profile_pic: getState().auth.user.profile_pic,
+                    timestamp: Date.now()
+                }
+            })
+        ).catch(err => dispatch({
+            type: ARTICLE_COMMENT_ERROR,
+            payload: { type: "post", err: err }
+        }))
+}
+
+
+// Adds Comment
+export const SerachArticleComments = commentParams => (dispatch, getState) => {
+    dispatch(SetArticleLoading());
+
+    axios.get(`/comments/${commentParams.article_id}/${commentParams.text}/`)
+        .then(res =>
+            dispatch({
+                type: SEARCH_ARTICLE_COMMENTS,
+                payload: res.data
+            })
+        ).catch(err => dispatch({
+            type: ARTICLE_COMMENT_ERROR,
+            payload: { type: "search", err: err }
+        }))
 }
 
 // Update Title, Content... One Article By ID

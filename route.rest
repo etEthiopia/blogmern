@@ -114,7 +114,7 @@ POST http://localhost:5000/auth/
 Content-Type: application/json
 
 {
-    "email": "eliasmeseret@gmail.com",
+    "email": "swayam@affable.ai",
     "password": "A@123456"
 }
 
@@ -172,6 +172,33 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZDc3NWNjMTAxNmI1
 {
  "title": "Science"
 }
+
+###
+
+GET http://localhost:5000/comments/62da3b1ded173b2c5f42f9df
+
+
+###
+
+
+GET http://localhost:5000/comments/62da3b1ded173b2c5f42f9df/First
+
+
+###
+
+
+
+POST http://localhost:5000/comments/
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZGEzMDM4MjFiNTM3ZmYxMDA3MWEwYyIsInVzZXJfaWQiOiI1MGRpZDQyZ2RyIiwiaWF0IjoxNjU4NDgzMTk3LCJleHAiOjE2NjM2NjcxOTd9.nkOBUOx8FvQcf1OglJd0LByAHqznVUgxndcLcmOQmUo
+
+{
+    "body": "Third Comment on Stonehenge Article",
+    "article_id": "62da3b1ded173b2c5f42f9df"
+}
+
+
+//  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZDc1Y2I1YzM1YjM3YTg0NzUwZmVlMSIsInVzZXJfaWQiOiJxd2VydHl1aW9wIiwiaWF0IjoxNjU4NDgwNTkzLCJleHAiOjE2NjM2NjQ1OTN9.YGsmtA1PQHIiNy_vn_HeRwCqGNuFc0d5LigQbb18fm0",
 
 
 //token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyZDc3NWNjMTAxNmI1OWRiZGU0ZjBjMSIsInVzZXJfaWQiOiJBRE1JTiIsImlhdCI6MTY1ODI4NzY0OSwiZXhwIjoxNjU4Mzc0MDQ5fQ.5NLN8EQYTBc-l4ndbqqk70qqDJBJZXTgQxPgpUKaiUE
